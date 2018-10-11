@@ -1,3 +1,7 @@
+<<<<<<< HEAD
 test
 
 hoi, al je dit leest doet hij het
+=======
+test!!!
+>>>>>>> 9f16cf0a467d2ab317711307de7c8db38c15c8cc
