@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 plt.close("all")
 
-yeartosec=1.#365.*24.*3600.
+yeartosec=1.#365.*24.*3600., if 1. timesteps are in years
 L=1.5*10.**6. #length domain in meter
 xstep=(1.5/50.)*10.**6. #x step in meter
 Tend=20000.*yeartosec #final time in seconds, years if yeartosec=1.
@@ -25,11 +25,12 @@ xplot=[i for i in np.arange(0.,L*10.**(-3.),xstep*10.**(-3.))]#x list in km
 #, can be used for plotting, no calculations (or with conversion)!
 h=np.empty([Nx,Nt])
 
-A=1.*10.**(-16.)
-rho=910.
-g=9.81
+A=1.*10.**(-16.) # from Glen's flow law, dependent on temperature, crystal oriëntation etc. 
+# A is probably in year^(-1)Pa^(-3)
+rho=910.#kg/m^3
+g=9.81 #m/s^2
 n=3.
-a=0.3
+a=0.3 #accumulation in m year^(-1)
 dconst=((rho*g)**n)*2.*A/(n+2.)
 
 for l in range (0,Nt-1):
