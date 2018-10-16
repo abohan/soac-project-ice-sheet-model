@@ -45,6 +45,7 @@ for l in range (0,Nt-1):
     print(l)    
     for y in range (1,Nx-1):
         for k in range (1,Ny-1):
+            s[:,:,:]=H[:,:,:]+b[:,:,:]
             xgradplusx=(1./4.)*((s[y+1,k,l]-s[y,k,l])/xstep+(s[y+1,k+1,l]-s[y,k+1,l])/xstep)**2
             ygradplusx=(1./4.)*((s[y,k+1,l]-s[y,k,l])/ystep+(s[y+1,k+1,l]-s[y+1,k,l])/ystep)**2
             avsplusx=((s[y,k,l]+s[y+1,k,l]+s[y,k+1,l]+s[y+1,k+1,l])/4.)**5
@@ -55,8 +56,6 @@ for l in range (0,Nt-1):
             dplusmin=(xgradminx+ygradminx)*avsminx
             
 
-
-            
             xgradplusy=(1./4.)*((s[y,k-1,l]-s[y-1,k-1,l])/xstep+(s[y,k,l]-s[y-1,k,l])/xstep)**2
             ygradplusy=(1./4.)*((s[y-1,k,l]-s[y-1,k-1,l])/ystep+(s[y,k,l]-s[y,k-1,l])/ystep)**2
             avsplusy=((s[y-1,k-1,l]+s[y,k-1,l]+s[y-1,k,l]+s[y,k,l])/4.)**5
@@ -67,11 +66,15 @@ for l in range (0,Nt-1):
             dminplus=(xgradminy+ygradminy)*avsminy
             part1x=(tstep/(xstep**2.))*(1./2.)*(dplusplus+dplusmin)*(s[y+1,k,l]-s[y,k,l])
             part2x=(tstep/(xstep**2.))*(1./2.)*(dminplus+dminmin)*(s[y,k,l]-s[y-1,k,l])
-            gradxdt=part1x-part2x
+            #gradxdt=part1x-part2x
             part1y=(tstep/(ystep**2.))*(1./2.)*(dplusplus+dminplus)*(s[y,k+1,l]-s[y,k,l])
             part2y=(tstep/(ystep**2.))*(1./2.)*(dplusmin+dminmin)*(s[y,k,l]-s[y,k-1,l])
 
-            s[y,k,l+1]=s[y,k,l]+tstep+((part1x-part2x)+(part1y-part2y))
+            H[y,k,l+1]=H[y,k,l]+a*tstep-((part1x-part2x)+(part1y-part2y))*2.*((rho*g)**3.)*A/5.
+            if H[y,k,l+1]<0.:
+                H[y,k,l+1]=0.
+s[:,:,:]=b[:,:,:]+H[:,:,:]
+                
 
 #%%      
 X, Y = np.meshgrid(xplot, yplot) 

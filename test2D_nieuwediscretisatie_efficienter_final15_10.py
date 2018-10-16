@@ -48,9 +48,23 @@ for l in range (0,Nt-1):
     h=b+H
     d=(1./4.)*(((h[1:Nx,0:(Ny-1),l]-h[0:(Nx-1),0:(Ny-1),l])/xstep)+((h[1:Nx,1:Ny,l]-h[0:(Nx-1),1:Ny,l])/xstep))**2.\
     +(1./4.)*(((h[0:(Nx-1),1:Ny,l]-h[0:(Nx-1),0:(Ny-1),l])/ystep)+((h[1:Nx,1:Ny,l]-h[1:Nx,0:(Ny-1),l])/ystep))**2.
-    ddds=(1/xstep**2)*((1./2.)*(d[1:Nx,1:Ny]+d[1:Nx,0:(Ny-1)])*(h[2:Nx,1:(Ny-1),l]-h[1:(Nx-1),1:(Ny-1),l])-(1./2.)*(d[0:(Nx-1),1:Ny]+d[0:(Nx-1),0:(Ny-1)])*(h[1:(Nx-1),1:(Ny-1),l]-h[0:(Nx-2),1:(Ny-1),l]))\
+    ddds=(1/xstep**2)*((1./2.)*(d[1:Nx,1:Ny]+d[1:Nx,0:int(Ny-1)])*(h[2:Nx,1:(Ny-1),l]-h[1:(Nx-1),1:(Ny-1),l])-(1./2.)*(d[0:(Nx-1),1:Ny]+d[0:(Nx-1),0:(Ny-1)])*(h[1:(Nx-1),1:(Ny-1),l]-h[0:(Nx-2),1:(Ny-1),l]))\
     +(1./ystep**2)*((1./2.)*(d[1:Nx,1:Ny]+d[0:(Nx-1),1:Ny])*(h[1:(Nx-1),2:Ny,l]-h[1:(Nx-1),1:(Ny-1),l])-(1./2.)*(d[1:Nx,0:(Ny-1)]+d[0:(Nx-1),0:(Ny-1)])*(h[1:(Nx-1),1:(Ny-1),l]-h[1:(Nx-1),0:(Ny-2),l]))
     H[1:(Nx-1),1:(Ny-1),(l+1)]=a*tstep-(2.*(rho*g)**3.*A/5.)*ddds*tstep
+    
+    H[0,:,:]=0.
+    H[int(Nx-1),:,:]=0.
+    H[:,0,:]=0.
+    H[:,(Ny-1),:]=0.
+    
+    
+    
+    
+    
+    for y in range (1,Nx-1):
+        for k in range (1,Ny-1):
+            if H[y,k,l]<0.:
+                H[y,k,l]=0.
     h=b+H
 #        for k in range (1,Ny-1):
 #            xgradplusx=(1./4.)*((s[y+1,k,l]-s[y,k,l])/xstep+(s[y+1,k+1,l]-s[y,k+1,l])/xstep)**2
