@@ -9,11 +9,11 @@ import matplotlib.pyplot as plt
 import numpy as np
 plt.close("all")
 
-yeartosec=1.#365.*24.*3600.
+yeartosec=365.*24.*3600.
 L=1.5*10.**6. #length domain in meter
 xstep=(1.5/50.)*10.**6. #x step in meter, de 100. was eerst 50.
 ystep=xstep
-Tend=20000.*yeartosec #final time in seconds, years if yeartosec=1.
+Tend=20000.*yeartosec/4. #final time in seconds, years if yeartosec=1.
 tstep=2.*yeartosec #t step in seconds
 Nx=int(L/xstep) #number of x steps
 Ny=Nx
@@ -31,21 +31,29 @@ yplot=[i for i in np.arange(0.,L*10.**(-3.),ystep*10.**(-3.))]#x list in km
 #, can be used for plotting, no calculations (or with conversion)!
 s=np.empty([Nx,Ny,Nt])
 
-A=1.*10.**(-16.)
+A=1.*10.**(-16.)/yeartosec
 rho=910.
 g=9.81
 n=3.
-a=0.3
+a=0.3/yeartosec
 Z8=(a*5.*L**4)/(2.*A*(rho*g)**3.)# is approx. 3,898.0 m.... 
 Z=Z8**(1./float(8.))
 
 
-
+#s = H + b
 for l in range (0,Nt-1):
-    print(l)    
+    print(l) 
     for y in range (1,Nx-1):
         for k in range (1,Ny-1):
-            s[:,:,:]=H[:,:,:]+b[:,:,:]
+            s[y,k,l] = b[y,k,l] + H[y,k,l]
+            s[y+1,k,l] = b[y+1,k,l] + H[y+1,k,l]
+            s[y-1,k,l] = b[y-1,k,l] + H[y-1,k,l]
+            s[y,k-1,l] = b[y,k-1,l] + H[y,k-1,l]
+            s[y+1,k-1,l] = b[y+1,k-1,l] + H[y+1,k-1,l]
+            s[y-1,k-1,l] = b[y-1,k-1,l] + H[y-1,k-1,l]
+            s[y,k+1,l] = b[y,k+1,l] + H[y,k+1,l]
+            s[y+1,k+1,l] = b[y+1,k+1,l] + H[y+1,k+1,l]
+            s[y-1,k+1,l] = b[y-1,k+1,l] + H[y-1,k+1,l]
             xgradplusx=(1./4.)*((s[y+1,k,l]-s[y,k,l])/xstep+(s[y+1,k+1,l]-s[y,k+1,l])/xstep)**2
             ygradplusx=(1./4.)*((s[y,k+1,l]-s[y,k,l])/ystep+(s[y+1,k+1,l]-s[y+1,k,l])/ystep)**2
             avsplusx=((s[y,k,l]+s[y+1,k,l]+s[y,k+1,l]+s[y+1,k+1,l])/4.)**5
@@ -73,6 +81,8 @@ for l in range (0,Nt-1):
             H[y,k,l+1]=H[y,k,l]+a*tstep-((part1x-part2x)+(part1y-part2y))*2.*((rho*g)**3.)*A/5.
             if H[y,k,l+1]<0.:
                 H[y,k,l+1]=0.
+            #s[y,k,l+1] = b[y,k,l+1] + H[y,k,l+1]
+
 s[:,:,:]=b[:,:,:]+H[:,:,:]
                 
 
