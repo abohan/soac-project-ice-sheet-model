@@ -10,16 +10,17 @@ import numpy as np
 plt.close("all")
 
 yeartosec=365.*24.*3600.
-L=1.5*10.**6. #length domain in meter
+L=1.5*10.**6./10. #length domain in meter
 xstep=(1.5/50.)*10.**6. #x step in meter, de 100. was eerst 50.
 ystep=xstep
-Tend=20000.*yeartosec/4. #final time in seconds, years if yeartosec=1.
-tstep=2.*yeartosec #t step in seconds
+Tend=20000.*yeartosec #final time in seconds, years if yeartosec=1.
+tstep=2.*yeartosec/4. #t step in seconds
 Nx=int(L/xstep) #number of x steps
 Ny=Nx
-Nt=int(Tend/tstep) #number of t steps
+Nt=200#int(Tend/tstep) #number of t steps
 b=np.zeros([Nx,Ny,Nt]) #bottom topography empty list
-H=np.zeros([Nx,Ny,Nt]) #bottom topography empty list
+H=np.zeros([Nx,Ny,Nt])
+H[1:-1,1:-1,0]=1000. #bottom topography empty list
 #h=np.empty([Nx,Ny,Nt]) #bottom topography empty list
 #for k in range (0,Nt):
 #    b[:,:,k]=[i for i in np.arange(0.,L*10.**(-3.),xstep*10.**(-3.))]
@@ -29,9 +30,9 @@ xplot=[i for i in np.arange(0.,L*10.**(-3.),xstep*10.**(-3.))]#x list in km
 #, can be used for plotting, no calculations (or with conversion)!
 yplot=[i for i in np.arange(0.,L*10.**(-3.),ystep*10.**(-3.))]#x list in km
 #, can be used for plotting, no calculations (or with conversion)!
-s=np.zeros([Nx,Ny,Nt])
+#s=np.zeros([Nx,Ny,Nt])
 
-A=1.*10.**(-16.)/yeartosec
+A=10.**(-23)#1.*10.**(-16.)/yeartosec
 rho=910.
 g=9.81
 n=3.
@@ -43,9 +44,9 @@ Z=Z8**(1./float(8.))
 #s = H + b
 for l in range (0,Nt-1):
     print(l)
-    for f in range (1,Nx-1):
-        for g in range (1,Ny-1):
-            s[f,g,l] = b[f,g,l] + H[f,g,l]
+#    for f in range (1,Nx-1):
+#        for g in range (1,Ny-1):
+#            s[f,g,l] = b[f,g,l] + H[f,g,l]
     for y in range (1,Nx-1):
         for k in range (1,Ny-1):
 #            s[y,k,l] = b[y,k,l] + H[y,k,l]
@@ -57,41 +58,41 @@ for l in range (0,Nt-1):
 #            s[y,k+1,l] = b[y,k+1,l] + H[y,k+1,l]
 #            s[y+1,k+1,l] = b[y+1,k+1,l] + H[y+1,k+1,l]
 #            s[y-1,k+1,l] = b[y-1,k+1,l] + H[y-1,k+1,l]
-            xgradplusx=(1./4.)*((s[y+1,k,l]-s[y,k,l])/xstep+(s[y+1,k+1,l]-s[y,k+1,l])/xstep)**2
-            ygradplusx=(1./4.)*((s[y,k+1,l]-s[y,k,l])/ystep+(s[y+1,k+1,l]-s[y+1,k,l])/ystep)**2
-            avsplusx=((s[y,k,l]+s[y+1,k,l]+s[y,k+1,l]+s[y+1,k+1,l])/4.)**5
+            xgradplusx=(1./4.)*((H[y+1,k,l]-H[y,k,l])/xstep+(H[y+1,k+1,l]-H[y,k+1,l])/xstep)**2
+            ygradplusx=(1./4.)*((H[y,k+1,l]-H[y,k,l])/ystep+(H[y+1,k+1,l]-H[y+1,k,l])/ystep)**2
+            avsplusx=((H[y,k,l]+H[y+1,k,l]+H[y,k+1,l]+H[y+1,k+1,l])/4.)**5
             dplusplus=(xgradplusx+ygradplusx)*avsplusx
-            xgradminx=(1./4.)*((s[y+1,k-1,l]-s[y,k-1,l])/xstep+(s[y+1,k,l]-s[y,k,l])/xstep)**2
-            ygradminx=(1./4.)*((s[y,k,l]-s[y,k-1,l])/ystep+(s[y+1,k,l]-s[y+1,k-1,l])/ystep)**2
-            avsminx=((s[y,k-1,l]+s[y+1,k-1,l]+s[y,k,l]+s[y+1,k,l])/4.)**5
+            xgradminx=(1./4.)*((H[y+1,k-1,l]-H[y,k-1,l])/xstep+(H[y+1,k,l]-H[y,k,l])/xstep)**2
+            ygradminx=(1./4.)*((H[y,k,l]-H[y,k-1,l])/ystep+(H[y+1,k,l]-H[y+1,k-1,l])/ystep)**2
+            avsminx=((H[y,k-1,l]+H[y+1,k-1,l]+H[y,k,l]+H[y+1,k,l])/4.)**5
             dplusmin=(xgradminx+ygradminx)*avsminx
             
 
-            xgradplusy=(1./4.)*((s[y,k-1,l]-s[y-1,k-1,l])/xstep+(s[y,k,l]-s[y-1,k,l])/xstep)**2
-            ygradplusy=(1./4.)*((s[y-1,k,l]-s[y-1,k-1,l])/ystep+(s[y,k,l]-s[y,k-1,l])/ystep)**2
-            avsplusy=((s[y-1,k-1,l]+s[y,k-1,l]+s[y-1,k,l]+s[y,k,l])/4.)**5
+            xgradplusy=(1./4.)*((H[y,k-1,l]-H[y-1,k-1,l])/xstep+(H[y,k,l]-H[y-1,k,l])/xstep)**2
+            ygradplusy=(1./4.)*((H[y-1,k,l]-H[y-1,k-1,l])/ystep+(H[y,k,l]-H[y,k-1,l])/ystep)**2
+            avsplusy=((H[y-1,k-1,l]+H[y,k-1,l]+H[y-1,k,l]+H[y,k,l])/4.)**5
             dminmin=(xgradplusy+ygradplusy)*avsplusy
-            xgradminy=(1./4.)*((s[y,k,l]-s[y-1,k,l])/xstep+(s[y,k+1,l]-s[y-1,k+1,l])/xstep)**2
-            ygradminy=(1./4.)*((s[y-1,k+1,l]-s[y-1,k,l])/ystep+(s[y,k+1,l]-s[y,k,l])/ystep)**2
-            avsminy=((s[y-1,k,l]+s[y,k,l]+s[y-1,k+1,l]+s[y,k+1,l])/4.)**5
+            xgradminy=(1./4.)*((H[y,k,l]-H[y-1,k,l])/xstep+(H[y,k+1,l]-H[y-1,k+1,l])/xstep)**2
+            ygradminy=(1./4.)*((H[y-1,k+1,l]-H[y-1,k,l])/ystep+(H[y,k+1,l]-H[y,k,l])/ystep)**2
+            avsminy=((H[y-1,k,l]+H[y,k,l]+H[y-1,k+1,l]+H[y,k+1,l])/4.)**5
             dminplus=(xgradminy+ygradminy)*avsminy
-            part1x=(tstep/(xstep**2.))*(1./2.)*(dplusplus+dplusmin)*(s[y+1,k,l]-s[y,k,l])
-            part2x=(tstep/(xstep**2.))*(1./2.)*(dminplus+dminmin)*(s[y,k,l]-s[y-1,k,l])
+            part1x=(tstep/(xstep**2.))*(1./2.)*(dplusplus+dplusmin)*(H[y+1,k,l]-H[y,k,l])
+            part2x=(tstep/(xstep**2.))*(1./2.)*(dminplus+dminmin)*(H[y,k,l]-H[y-1,k,l])
             #gradxdt=part1x-part2x
-            part1y=(tstep/(ystep**2.))*(1./2.)*(dplusplus+dminplus)*(s[y,k+1,l]-s[y,k,l])
-            part2y=(tstep/(ystep**2.))*(1./2.)*(dplusmin+dminmin)*(s[y,k,l]-s[y,k-1,l])
+            part1y=(tstep/(ystep**2.))*(1./2.)*(dplusplus+dminplus)*(H[y,k+1,l]-H[y,k,l])
+            part2y=(tstep/(ystep**2.))*(1./2.)*(dplusmin+dminmin)*(H[y,k,l]-H[y,k-1,l])
 
-            H[y,k,l+1]=H[y,k,l]+a*tstep-((part1x-part2x)+(part1y-part2y))*2.*((rho*g)**3.)*A/5.
+            H[y,k,l+1]=H[y,k,l]+a*tstep+((part1x-part2x)+(part1y-part2y))*2.*((rho*g)**3.)*A/5.
             if H[y,k,l+1]<0.:
                 H[y,k,l+1]=0.
             #s[y,k,l+1] = b[y,k,l+1] + H[y,k,l+1]
 
-s[:,:,:]=b[:,:,:]+H[:,:,:]
+#s[:,:,:]=b[:,:,:]+H[:,:,:]
                 
 
 #%%      
 X, Y = np.meshgrid(xplot, yplot) 
-Z=s[:,:,int(0.7*Nt)]           
+Z=H[:,:,-1]           
 plt1=plt.figure()
 plt.contour(X,Y,Z)#, [levels], **kwargs)
 plt.colorbar()
@@ -102,7 +103,7 @@ locxt=int(locx*Nx)
 locy=0.7
 locyt=int(locy*Ny)
 plt.figure()
-plt.plot (timeplot,s[locxt,locyt,:]) 
+plt.plot (timeplot,H[locxt,locyt,:]) 
 plt.title('2D ice sheet model timeseries, location:'+str(locx)+'Nx'+','+str(locy)+'Ny')
 plt.grid()
 plt.ylabel('s')
