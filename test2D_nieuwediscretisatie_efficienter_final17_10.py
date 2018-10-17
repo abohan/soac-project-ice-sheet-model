@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 plt.close("all")
 
-yeartosec=1.#365.*24.*3600.
+yeartosec=365.*24.*3600.
 L=1.5*10.**6. #length domain in meter
 xstep=(1.5/50.)*10.**6. #x step in meter, de 100. was eerst 50.
 ystep=xstep
@@ -18,9 +18,9 @@ tstep=2.*yeartosec #t step in seconds
 Nx=int(L/xstep) #number of x steps
 Ny=Nx
 Nt=int(Tend/tstep) #number of t steps
-b=np.empty([Nx,Ny,Nt]) #bottom topography empty list
-H=np.empty([Nx,Ny,Nt]) #bottom topography empty list
-d=np.empty([(Nx-1),(Ny-1)]) #bottom topography empty list
+b=np.zeros([Nx,Ny,Nt]) #bottom topography empty list
+H=np.zeros([Nx,Ny,Nt]) #bottom topography empty list
+d=np.zeros([(Nx-1),(Ny-1)]) #bottom topography empty list
 #h=np.empty([Nx,Ny,Nt]) #bottom topography empty list
 #for k in range (0,Nt):
 #    b[:,:,k]=[i for i in np.arange(0.,L*10.**(-3.),xstep*10.**(-3.))]
@@ -32,13 +32,13 @@ yplot=[i for i in np.arange(0.,L*10.**(-3.),ystep*10.**(-3.))]#x list in km
 #, can be used for plotting, no calculations (or with conversion)!
 s=np.empty([Nx,Ny,Nt])
 
-A=1.*10.**(-16.)
+A=1.*10.**(-16.)/yeartosec
 rho=910.
 g=9.81
 n=3.
-a=0.3
-Z8=(a*5.*L**4)/(2.*A*(rho*g)**3.)# is approx. 3,898.0 m.... 
-Z=Z8**(1./float(8.))
+a=0.3/yeartosec
+#Z8=(a*5.*L**4)/(2.*A*(rho*g)**3.)# is approx. 3,898.0 m.... 
+#Z=Z8**(1./float(8.))
 dNy=int(Ny-1)
 dNx=int(Nx-1)
 
@@ -54,10 +54,10 @@ for l in range (0,Nt-1):
     +(1./ystep**2)*((1./2.)*(d[1:dNx,1:dNy]+d[0:(dNx-1),1:dNy])*(h[1:(Nx-1),2:Ny,l]-h[1:(Nx-1),1:(Ny-1),l])-(1./2.)*(d[1:dNx,0:(dNy-1)]+d[0:(dNx-1),0:(dNy-1)])*(h[1:(Nx-1),1:(Ny-1),l]-h[1:(Nx-1),0:(Ny-2),l]))
     H[1:(Nx-1),1:(Ny-1),(l+1)]=a*tstep-(2.*(rho*g)**3.*A/5.)*ddds*tstep #let op!!! d is een element korter!!
     
-    H[0,:,:]=0.
-    H[int(Nx-1),:,:]=0.
-    H[:,0,:]=0.
-    H[:,(Ny-1),:]=0.
+#    H[0,:,:]=0.
+#    H[int(Nx-1),:,:]=0.
+#    H[:,0,:]=0.
+#    H[:,(Ny-1),:]=0.
     
     
     
