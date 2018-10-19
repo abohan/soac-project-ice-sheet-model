@@ -6,6 +6,8 @@ Created on Thu Oct 11 14:50:54 2018
 """
 
 import matplotlib.pyplot as plt
+from matplotlib import cm
+from mpl_toolkits.mplot3d import Axes3D
 import numpy as np
 plt.close("all")
 
@@ -71,8 +73,15 @@ for l in range (0,Nt-1):
 X, Y = np.meshgrid(xplot[:-1], yplot[:-1]) 
 Z=np.transpose(H[:,:,-1])         
 plt1=plt.figure()
-plt.contour(X,Y,Z)#, [levels], **kwargs)
+plt.contourf(X,Y,Z)#, [levels], **kwargs)
 plt.colorbar()
+
+X, Y = np.meshgrid(xplot[:-1], yplot[:-1])#-1 
+Z=np.transpose(H[:,:,-1])#int(0.7*Nt)] 
+plt2 = plt.figure()
+ax = plt2.gca(projection = '3d')
+surf = ax.plot_surface(X, Y, Z, cmap=cm.viridis, linewidth=0, antialiased=False)
+#Axes3D.plot_surface(X,Y,Z)
 
 locx=0.7
 locxt=int(locx*Nx)
